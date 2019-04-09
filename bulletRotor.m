@@ -2,7 +2,7 @@ clc; clear; clf;
 
 % Define parameters
 numShotsMin = 1;
-numShotsMax = 500;
+numShotsMax = 100;
 rotorRPM = 62.83;  % in rad/s
 bulletVel = 400;  % m/s
 numBlades = 1;
@@ -10,7 +10,7 @@ Tmax = 10;
 maxIter = 100;
 distShot = 1;
 chord = 1/6;
-colorCode = ['b' 'r'];
+colorCode = ['b' 'r'];  % For blue and red colors
 
 probHit = zeros(1,numShotsMax);
 
@@ -32,7 +32,7 @@ for inum=numShotsMin:numShotsMax
   end
   
   if (i == maxIter)
-    disp('Failed to find unique tShot array');
+    disp('Failed to find unique tShot array. Run code again.');
     exit;
   end
   
@@ -41,8 +41,6 @@ for inum=numShotsMin:numShotsMax
   % Generate a set of random points in polar coords
   PShot = rand(2,numShots);
   PShot(2,:) = PShot(2,:)*2*pi;  % Scale from unity to 2pi radians
-  
-  %polar(PShot(2,:),PShot(1,:),'o')
   
   % Calculate time taken for bullet to travel to PShot(r,psi)
   % Assume shot fired from distance dist
@@ -53,17 +51,20 @@ for inum=numShotsMin:numShotsMax
     shotStatus(i)=checkImpact(PShot(:,i),tTravel(i),numBlades,rotorRPM,chord);
   end
   
-%   % Plot hit and non-hit shots
-%   for i=1:numShots
-%     polarplot(PShot(2,i),PShot(1,i),[colorCode(shotStatus(i)+1) 'o']);
-%     hold on;
-%   end
-%   pause(0.25);
-%   clf;
+  %% Plot hit and non-hit shots
+  %for i=1:numShots
+  %  polarplot(PShot(2,i),PShot(1,i),[colorCode(shotStatus(i)+1) 'o']);
+  %  hold on;
+  %end
+  %Ax = gca; % current axes
+  %Ax.RTickLabel = []; 
+  %drawnow
+  %pause(0.25);
+  %clf;
   
   numHits = sum(shotStatus);
   probHit(inum) = numHits/numShots;
 end
 
-plot(numShotsMin:numShotsMax,probHit)
+% plot(numShotsMin:numShotsMax,probHit)
 mean(probHit)
